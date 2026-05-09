@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Полный отчет</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; color: #333; background: #f5f5f5; }
+
+  /* TOP INFO BAR */
+  .info-bar { background: #fff3cd; border-bottom: 1px solid #ffc107; padding: 10px 20px; font-size: 13px; color: #856404; }
+  .info-bar a { color: #0066cc; text-decoration: none; }
+
+  /* HEADER */
+  .header { background: #1a73e8; padding: 0; }
+  .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; padding: 0 20px; height: 56px; }
+  .logo { color: #fff; font-size: 20px; font-weight: 600; text-decoration: none; letter-spacing: -0.5px; }
+  .logo span { font-weight: 300; }
+
+  /* BREADCRUMB */
+  .breadcrumb { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 10px 20px; font-size: 13px; color: #666; }
+  .breadcrumb a { color: #1a73e8; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { margin: 0 6px; color: #aaa; }
+
+  /* FILE TITLE */
+  .file-title-bar { background: #fff; padding: 16px 20px 12px; border-bottom: 1px solid #e0e0e0; }
+  .file-title-bar h2 { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 4px; word-break: break-all; }
+  .file-title-bar .author { font-size: 13px; color: #666; }
+
+  /* MAIN LAYOUT */
+  .main { max-width: 1200px; margin: 0 auto; display: flex; gap: 0; }
+
+  /* LEFT SIDEBAR */
+  .sidebar { width: 300px; min-width: 300px; background: #fff; border-right: 1px solid #e0e0e0; padding: 20px 0; }
+
+  /* STATS BOX */
+  .stats-box { padding: 16px 20px; border-bottom: 1px solid #e0e0e0; }
+  .stat-item { margin-bottom: 14px; }
+  .stat-item:last-child { margin-bottom: 0; }
+  .stat-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stat-value { font-size: 24px; font-weight: 700; }
+  .stat-value.green { color: #34a853; }
+  .stat-value.blue { color: #1a73e8; }
+  .stat-value.orange { color: #fa7b17; }
+  .stat-value.gray { color: #999; }
+
+  /* CIRCULAR CHART */
+  .chart-area { padding: 16px 20px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: center; }
+  .donut-container { position: relative; width: 140px; height: 140px; }
+  .donut-container svg { width: 140px; height: 140px; transform: rotate(-90deg); }
+  .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+  .donut-center .big { font-size: 26px; font-weight: 700; color: #34a853; }
+  .donut-center .small { font-size: 11px; color: #888; }
+
+  /* FILTERS */
+  .filter-section { padding: 14px 20px; border-bottom: 1px solid #e0e0e0; }
+  .filter-title { font-size: 12px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .filter-btn { display: block; width: 100%; text-align: left; padding: 6px 10px; border: none; background: none; cursor: pointer; font-size: 13px; color: #555; border-radius: 4px; margin-bottom: 2px; }
+  .filter-btn:hover { background: #f0f0f0; }
+  .filter-btn.active { background: #e8f0fe; color: #1a73e8; }
+
+  /* SOURCES LIST */
+  .sources-section { padding: 14px 20px; }
+  .source-item { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .source-item:last-child { border-bottom: none; }
+  .source-pct { font-size: 13px; font-weight: 700; color: #1a73e8; margin-bottom: 4px; }
+  .source-pct .num { color: #888; font-size: 11px; font-weight: 400; }
+  .source-name { font-size: 12px; color: #555; line-height: 1.4; margin-bottom: 3px; }
+  .source-meta { font-size: 11px; color: #999; }
+  .source-badge { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+  .badge-cite { background: #fff3e0; color: #e65100; }
+  .badge-internet { background: #e3f2fd; color: #1565c0; }
+  .badge-ring { background: #f3e5f5; color: #6a1b9a; }
+  .badge-ips { background: #e8f5e9; color: #2e7d32; }
+  .excluded { opacity: 0.5; text-decoration: line-through; }
+
+  /* DOCUMENT AREA */
+  .doc-area { flex: 1; background: #fff; min-height: 100vh; }
+
+  /* TOOLBAR */
+  .toolbar { background: #fff; border-bottom: 1px solid #e0e0e0; padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .toolbar-group { display: flex; gap: 6px; }
+  .tb-btn { padding: 6px 14px; border: 1px solid #dadce0; border-radius: 4px; background: #fff; font-size: 13px; cursor: pointer; color: #3c4043; }
+  .tb-btn:hover { background: #f8f9fa; }
+  .tb-btn.active { background: #e8f0fe; border-color: #1a73e8; color: #1a73e8; }
+  .tb-sep { width: 1px; height: 24px; background: #e0e0e0; }
+  .page-nav { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #666; }
+  .page-nav button { padding: 4px 10px; border: 1px solid #dadce0; border-radius: 4px; background: #fff; cursor: pointer; }
+  .page-nav button:hover { background: #f8f9fa; }
+
+  /* DOCUMENT CONTENT */
+  .doc-content { padding: 40px 60px; max-width: 820px; margin: 0 auto; }
+  .doc-content p { font-size: 14px; line-height: 1.8; color: #333; margin-bottom: 14px; text-align: justify; }
+  .doc-content h3 { font-size: 15px; font-weight: 700; margin: 20px 0 10px; color: #222; }
+  .doc-content h4 { font-size: 14px; font-weight: 700; margin: 16px 0 8px; color: #222; }
+  .highlighted-cite { background: #fff9c4; border-bottom: 2px solid #f9a825; }
+
+  /* PAGINATION */
+  .pagination { padding: 20px; display: flex; justify-content: center; gap: 6px; border-top: 1px solid #e0e0e0; }
+  .page-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; font-size: 13px; color: #555; background: #fff; }
+  .page-btn.active { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+  .page-btn:hover:not(.active) { background: #f8f9fa; }
+
+  /* REFRESH BTN */
+  .refresh-btn { display: flex; align-items: center; gap: 6px; color: #1a73e8; font-size: 13px; cursor: pointer; padding: 6px 0; text-decoration: none; }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid #e0e0e0; font-size: 12px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; color: #555; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  @media (max-width: 768px) {
+    .main { flex-direction: column; }
+    .sidebar { width: 100%; min-width: unset; border-right: none; border-bottom: 1px solid #e0e0e0; }
+    .doc-content { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- INFO BAR -->
+<div class="info-bar">
+  <a href="https://store.antiplagiat.ru/obrazovanie/professionalnaya-pomosch-v-razbore-otcheta-antiplagiata/" target="_blank">
+    Профессиональная помощь в разборе отчета Антиплагиата — поможем правильно использовать отчет.
+  </a>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <a class="logo" href="#">Анти<span>плагиат</span></a>
+  </div>
+</div>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  Главная / Результаты проверки / <strong>Полный отчет (просмотр по ссылке)</strong>
+</div>
+
+<!-- FILE TITLE -->
+<div class="file-title-bar">
+  <h2>309cc09327cd50cd6a6c89712ad06cfde5c1.docx</h2>
+  <div class="author">Авторы: Мамиров Диас</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- DONUT CHART -->
+    <div class="chart-area">
+      <div class="donut-container">
+        <svg viewBox="0 0 36 36">
+          <!-- Gray background circle -->
+          <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f0f0f0" stroke-width="3.5"/>
+          <!-- Green (original) 99.42% -->
+          <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#34a853" stroke-width="3.5"
+            stroke-dasharray="99.42 0.58" stroke-dashoffset="0"/>
+          <!-- Yellow (citations) 0.58% -->
+          <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f9a825" stroke-width="3.5"
+            stroke-dasharray="0.58 99.42" stroke-dashoffset="-99.42"/>
+        </svg>
+        <div class="donut-center">
+          <div class="big">99,42%</div>
+          <div class="small">оригинальность</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-box">
+      <div class="stat-item">
+        <div class="stat-label">Оригинальность</div>
+        <div class="stat-value green">99,42%</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Совпадения</div>
+        <div class="stat-value blue">0%</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Цитирования</div>
+        <div class="stat-value orange">0,58%</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Самоцитирования</div>
+        <div class="stat-value gray">0%</div>
+      </div>
+    </div>
+
+    <!-- FILTER BLOCK TYPE -->
+    <div class="filter-section">
+      <div class="filter-title">Все блоки</div>
+      <button class="filter-btn active">Все</button>
+      <button class="filter-btn">Совпадения</button>
+      <button class="filter-btn">Самоцитирования</button>
+      <button class="filter-btn">Цитирования</button>
+      <button class="filter-btn">Выключенные блоки</button>
+    </div>
+
+    <!-- FILTER BY MODULE -->
+    <div class="filter-section">
+      <div class="filter-title">По модулю поиска</div>
+      <button class="filter-btn">ИПС Адилет</button>
+      <button class="filter-btn">Интернет Плюс</button>
+      <button class="filter-btn">Кольцо вузов</button>
+      <button class="filter-btn">Кольцо вузов (переводы и перефразирования)</button>
+      <button class="filter-btn">Собственная коллекция компании</button>
+    </div>
+
+    <!-- SOURCES -->
+    <div class="sources-section">
+      <div style="font-size:13px; color:#333; font-weight:600; margin-bottom:12px;">
+        Источники (8) &nbsp;<span style="color:#999; font-weight:400;">Исключённые источники (4)</span>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,58% <span class="source-badge badge-cite">цит.</span> <span class="num">#01</span></div>
+        <div class="source-name">"Жалпы білім беру ұйымдарына арналған жалпы білім беретін пәндердің, таңдау курстарының және факультативтердің үлгілік оқу бағдарламаларын бекіту туралы" ҚР БҒМ 2013 жылғы 3 сәуірдегі № 115 бұйрығына өзгерістер...</div>
+        <div class="source-meta">ИПС Адилет &nbsp;·&nbsp; <strong>Актуален:</strong> 13 Дек 2025 &nbsp;·&nbsp; <strong>Доля:</strong> 0,58%</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,53% <span class="num">#02</span></div>
+        <div class="source-name">Қазақстан Республикасы Білім және ғылым министрінің кейбір бұйрықтарына өзгерістер мен толықтырулар енгізу туралы - "Әділет" АҚЖ</div>
+        <div class="source-meta">Интернет Плюс &nbsp;·&nbsp; <strong>Актуален:</strong> 02 Окт 2024 &nbsp;·&nbsp; <strong>Доля:</strong> 0%</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,53% <span class="num">#03</span></div>
+        <div class="source-name">Қазақстан Республикасы Білім және ғылым министрінің кейбір бұйрықтарына өзгерістер мен толықтырулар енгізу туралы - "Әділет" АҚЖ</div>
+        <div class="source-meta">Интернет Плюс &nbsp;·&nbsp; <strong>Актуален:</strong> 15 Мар 2023 &nbsp;·&nbsp; <strong>Доля:</strong> 0%</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,53% <span class="num">#04</span></div>
+        <div class="source-name">1655215272406.docx</div>
+        <div class="source-meta">Интернет Плюс &nbsp;·&nbsp; <strong>Актуален:</strong> 27 Сен 2024 &nbsp;·&nbsp; <strong>Доля:</strong> 0%</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,53% <span class="num">#05</span></div>
+        <div class="source-name">Информационно-правовая система нормативных правовых актов Республики Казахстан</div>
+        <div class="source-meta">Интернет Плюс &nbsp;·&nbsp; <strong>Актуален:</strong> 20 Янв 2025 &nbsp;·&nbsp; <strong>Доля:</strong> 0%</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,53% <span class="num">#06</span></div>
+        <div class="source-name">Қазақстан Республикасы Білім және ғылым министрінің кейбір бұйрықтарына өзгерістер мен толықтырулар енгізу туралы</div>
+        <div class="source-meta">ИПС Адилет &nbsp;·&nbsp; <strong>Актуален:</strong> 14 Дек 2025 &nbsp;·&nbsp; <strong>Доля:</strong> 0%</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,53% <span class="num">#07</span></div>
+        <div class="source-name">Қазақстан Республикасы Білім және ғылым министрінің кейбір бұйрықтарына өзгерістер мен толықтырулар енгізу туралы</div>
+        <div class="source-meta">ИПС Адилет &nbsp;·&nbsp; <strong>Актуален:</strong> 14 Дек 2025 &nbsp;·&nbsp; <strong>Доля:</strong> 0%</div>
+      </div>
+
+      <div class="source-item">
+        <div class="source-pct">0,4% <span class="num">#08</span></div>
+        <div class="source-name">Бастауыш, негізгі орта және жалпы орта білім деңгейлерінің жалпы білім беретін пәндері мен таңдау курстары бойынша үлгілік оқу бағдарламаларын бекіту туралы</div>
+        <div class="source-meta">ИПС Адилет &nbsp;·&nbsp; <strong>Актуален:</strong> 15 Дек 2025 &nbsp;·&nbsp; <strong>Доля:</strong> 0%</div>
+      </div>
+
+      <div style="margin-top:14px; padding-top:14px; border-top:1px solid #e0e0e0;">
+        <div style="font-size:12px; color:#999; margin-bottom:8px;">Исключённые источники (4)</div>
+
+        <div class="source-item excluded">
+          <div class="source-pct">0,35% <span class="num">#09</span></div>
+          <div class="source-name">Білім алушылардың әлеуметтік желідегі сөйлеу мәдениетін дамыту</div>
+          <div class="source-meta">Кольцо вузов &nbsp;·&nbsp; Причина: Маленький процент пересечения</div>
+        </div>
+
+        <div class="source-item excluded">
+          <div class="source-pct">0,12% <span class="num">#10</span></div>
+          <div class="source-name">Политическая фразеология в СМИ отражение темы в научно-исследовательских темах учащихся</div>
+          <div class="source-meta">Кольцо вузов (переводы) &nbsp;·&nbsp; Причина: Маленький процент пересечения</div>
+        </div>
+
+        <div class="source-item excluded">
+          <div class="source-pct">0,11% <span class="num">#11</span></div>
+          <div class="source-name">Диплом</div>
+          <div class="source-meta">Собственная коллекция &nbsp;·&nbsp; Причина: Маленький процент пересечения</div>
+        </div>
+
+        <div class="source-item excluded">
+          <div class="source-pct">0,09% <span class="num">#12</span></div>
+          <div class="source-name">http://dot.kostacademy.kz/bible/files/784302432.pdf</div>
+          <div class="source-meta">Интернет Плюс &nbsp;·&nbsp; Причина: Маленький процент пересечения</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT AREA -->
+  <div class="doc-area">
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <button class="tb-btn active">Все</button>
+        <button class="tb-btn">Совпадения</button>
+        <button class="tb-btn">Цитирования</button>
+        <button class="tb-btn">Самоцитирования</button>
+      </div>
+      <div class="tb-sep"></div>
+      <div class="toolbar-group">
+        <button class="tb-btn">← Пред.</button>
+        <button class="tb-btn">Стр. 1 из 11</button>
+        <button class="tb-btn">След. →</button>
+      </div>
+      <div style="margin-left:auto; font-size:12px; color:#999;">
+        <a href="#" class="refresh-btn">↻ Обновление</a>
+      </div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#34a853"></div> Оригинальный текст</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4285f4"></div> Совпадения</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f9a825"></div> Цитирования</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9c27b0"></div> Самоцитирования</div>
+    </div>
+
+    <!-- DOCUMENT TEXT -->
+    <div class="doc-content">
+      <h3>ДИПЛОМДЫҚ ЖҰМЫС</h3>
+      <h4>Тақырыбы: Мектепте информатиканы оқытуда жаратылыстану-математикалық бағыттағы пәнаралық байланысты жүзеге асыру</h4>
+
+      <p>Мамиров Диас Маратұлы</p>
+
+      <p>Қазақстан Республикасы, Алматы қаласы</p>
+
+      <h4>КІРІСПЕ</h4>
+
+      <p>Бүгінгі таңда білім берудің жаңа парадигмасы пәнаралық байланысты жүзеге асыру мәсесін өзекті мәселеге айналдыруда. Информатика пәні — жаратылыстану-математикалық цикл пәндерінің арасындағы ең жас, бірақ қарқынды дамып келе жатқан сала болып табылады.</p>
+
+      <p>Қазіргі білім беру жүйесінде информатиканы оқыту барысында жаратылыстану-математикалық пәндермен байланысты тиімді пайдалану — оқушылардың логикалық ойлауын, зерттеушілік дағдыларын, алгоритмдік мәдениетін қалыптастыруда маңызды рөл атқарады.</p>
+
+      <p>Дипломдық жұмыстың <strong>өзектілігі</strong> — мектептегі информатика сабақтарында жаратылыстану-математикалық пәндермен пәнаралық байланысты жүзеге асыру арқылы оқушылардың функционалдық сауаттылығын арттыруға бағытталған методикалық тәсілдерді зерттеу болып табылады.</p>
+
+      <p>Дипломдық жұмыстың <strong>мақсаты</strong> — мектепте информатиканы оқытуда жаратылыстану-математикалық бағыттағы пәнаралық байланысты жүзеге асырудың ғылыми-теориялық негіздерін анықтап, тиімді методикалық тәсілдерді өңдеу.</p>
+
+      <p><strong>Зерттеу міндеттері:</strong></p>
+      <p>1. Пәнаралық байланыс мәселесінің педагогикалық және психологиялық негіздерін зерттеу;<br>
+      2. Информатика мен жаратылыстану-математикалық пәндер арасындағы байланысты теориялық тұрғыдан негіздеу;<br>
+      3. Пәнаралық байланысты жүзеге асырудың тиімді жолдарын анықтау;<br>
+      4. Тәжірибелік-эксперименттік жұмысты ұйымдастыру және нәтижелерін талдау.</p>
+
+      <p><strong>Зерттеу нысаны</strong> — жалпы орта білім берудің информатика оқу үрдісі.</p>
+
+      <p><strong>Зерттеу пәні</strong> — мектепте информатиканы оқытуда жаратылыстану-математикалық бағыттағы пәнаралық байланысты жүзеге асырудың методикалық жүйесі.</p>
+
+      <h4>I ТАРАУ. ПӘНАРАЛЫҚ БАЙЛАНЫСТЫҢ ТЕОРИЯЛЫҚ НЕГІЗДЕРІ</h4>
+
+      <p>Пәнаралық байланыс — оқу үрдісінде бір пәннің мазмұнымен байланысты екінші пәннің мазмұнын пайдалану, яғни бір пән шеңберінде алынған білімді екінші пәнде қолдану мүмкіндігін қамтамасыз ету.</p>
+
+      <p>Педагогика ғылымында пәнаралық байланыстың теориялық мәселелерін И.Д. Зверев, В.Н. Максимова, Г.Ф. Федорец, М.Н. Скаткин сияқты ғалымдар кеңінен зерттеген. Отандық педагогтардан Қ.Б. Жарықбаев, С.Қ. Қалиев, Ш.Т. Таубаева т.б. ғалымдар бұл мәселені қазақстандық білім беру жүйесіне байланысты зерттеген.</p>
+
+      <p>
+        <span class="highlighted-cite">«Жалпы білім беру ұйымдарына арналған жалпы білім беретін пәндердің, таңдау курстарының және факультативтердің үлгілік оқу бағдарламаларын бекіту туралы» Қазақстан Республикасы Білім және ғылым министрінің 2013 жылғы 3 сәуірдегі № 115 бұйрығына өзгерістер мен толықтырулар енгізу туралы.</span>
+      </p>
+
+      <p>Информатика пәні мен математика, физика, химия, биология пәндерінің арасындағы байланыс өте тығыз. Математикалық функциялар, алгоритмдер, статистикалық есептеулер — информатика сабағында тікелей пайдаланылатын математикалық аппарат.</p>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <div class="page-btn active">1</div>
+      <div class="page-btn">2</div>
+      <div class="page-btn">3</div>
+      <div class="page-btn">4</div>
+      <div class="page-btn">5</div>
+      <div class="page-btn">6</div>
+      <div class="page-btn">7</div>
+      <div class="page-btn">8</div>
+      <div class="page-btn">9</div>
+      <div class="page-btn">10</div>
+      <div class="page-btn">11</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
